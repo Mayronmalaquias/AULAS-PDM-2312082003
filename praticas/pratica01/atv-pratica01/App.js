@@ -7,11 +7,11 @@ import DespesaRecentes from './screens/DespesaRecentes';
 import TodasDespesas from './screens/TodasDespesas';
 import GerenciarDespesa from './screens/GerenciarDespesa';
 import IconButton from './components/IconButton';
+import DespesasContextProvider from './store/despesas-context';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Navegação por abas (Bottom Tabs)
 function BottonTabScreen() {
   return (
     <Tab.Navigator
@@ -54,22 +54,23 @@ function BottonTabScreen() {
   );
 }
 
-// Navegador principal (Stack)
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Despesas"
-          component={BottonTabScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="GerenciarDespesa"
-          component={GerenciarDespesa}
-          options={{ title: 'Gerenciar Despesa' }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <DespesasContextProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Despesas"
+            component={BottonTabScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="GerenciarDespesa"
+            component={GerenciarDespesa}
+            options={{ title: 'Gerenciar Despesa' }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </DespesasContextProvider>
   );
 }
