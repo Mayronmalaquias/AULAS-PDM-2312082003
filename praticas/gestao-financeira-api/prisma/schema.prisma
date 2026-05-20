@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -22,7 +22,7 @@ model Category {
 model Transaction {
   id          String   @id @default(cuid())
   description String
-  value       Float
+  value       Decimal  @db.Decimal(12, 2)
   date        DateTime
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
