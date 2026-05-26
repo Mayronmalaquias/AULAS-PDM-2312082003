@@ -56,6 +56,59 @@ git push origin feature/praticaXX
 - ⚠️ Atenção!
 - Se o check ✅ não aparecer no `Pull Request`, há erros que precisam ser corrigidos antes da avaliação.
 
+## Como Rodar o Projeto Gestão Financeira
+
+O projeto Gestão Financeira possui um **backend** (API) e um **frontend** (app mobile). Ambos precisam estar rodando ao mesmo tempo.
+
+> Para instruções detalhadas de cada parte, consulte os READMEs individuais:
+> - [README do Backend](praticas/gestao-financeira-api/README.md)
+> - [README do Frontend](praticas/gestao-financeira/README.md)
+
+### Backend (API)
+
+```bash
+# 1. Acesse a pasta do backend
+cd praticas/gestao-financeira-api
+
+# 2. Instale as dependências
+npm install
+
+# 3. Configure o .env (edite com os dados do seu MySQL)
+cp .env.example .env
+
+# 4. Crie as tabelas no banco
+npx prisma migrate dev
+
+# 5. Popule as categorias padrão
+npm run prisma:seed
+
+# 6. Inicie o servidor (ficará rodando em http://localhost:3000)
+npm run dev
+```
+
+### Frontend (App Mobile)
+
+Com o backend rodando, abra um **novo terminal**:
+
+```bash
+# 1. Acesse a pasta do frontend
+cd praticas/gestao-financeira
+
+# 2. Instale as dependências
+npm install
+
+# 3. Configure o .env com o IP da sua máquina
+cp .env.example .env
+# Edite o .env: para celular físico, troque pelo seu IP (descubra com "ipconfig" no Windows)
+
+# 4. Inicie o app
+npx expo start
+```
+
+Escaneie o QR Code com o app **Expo Go** no celular. Celular e computador devem estar na mesma rede Wi-Fi.
+
+---
+
 ## Feedback e Avaliação
 Envie o link do seu Pull Request pela plataforma de ensino. A avaliação usará o sistema de **Code Review:**
 - **Approve (Aprovado):** Código cumpre os requisitos. Faça o merge!
