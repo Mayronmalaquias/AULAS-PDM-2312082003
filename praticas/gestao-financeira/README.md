@@ -1,50 +1,67 @@
-# Welcome to your Expo app 👋
+# gestao-financeira (Frontend)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+App mobile do projeto Gestão Financeira, construído com React Native e Expo.
 
-## Get started
+> **Atenção:** o backend (`gestao-financeira-api`) precisa estar rodando antes de iniciar o app. Siga o [README do backend](../gestao-financeira-api/README.md) primeiro.
 
-1. Install dependencies
+## Pré-requisitos
 
-   ```bash
-   npm install
-   ```
+- [Node.js LTS](https://nodejs.org/pt-br/)
+- App **Expo Go** instalado no celular ([Android](https://play.google.com/store/apps/details?id=host.exp.exponent) / [iOS](https://apps.apple.com/app/expo-go/id982107779))
+- Celular e computador na **mesma rede Wi-Fi**
 
-2. Start the app
+## Passo a passo para rodar
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### 1. Acesse a pasta do frontend
 
 ```bash
-npm run reset-project
+cd praticas/gestao-financeira
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Instale as dependências
 
-## Learn more
+```bash
+npm install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### 3. Configure as variáveis de ambiente
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Copie o arquivo de exemplo:
 
-## Join the community
+```bash
+cp .env.example .env
+```
 
-Join our community of developers creating universal apps.
+Abra o `.env` e ajuste a URL da API conforme o dispositivo que vai usar:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```env
+# Emulador Android (padrão)
+EXPO_PUBLIC_API_URL=http://10.0.2.2:3000
+
+# Celular físico Android ou iOS — substitua pelo IP da sua máquina
+# Para descobrir seu IP: execute "ipconfig" no terminal (Windows) ou "ifconfig" (Mac/Linux)
+EXPO_PUBLIC_API_URL=http://192.168.X.X:3000
+```
+
+> Para descobrir o IP da sua máquina no Windows, abra o terminal e execute:
+> ```bash
+> ipconfig
+> ```
+> Use o valor de **Endereço IPv4** da sua rede Wi-Fi.
+
+### 4. Inicie o app
+
+```bash
+npx expo start
+```
+
+Um QR Code será exibido no terminal. Abra o app **Expo Go** no celular e escaneie o QR Code.
+
+## Scripts disponíveis
+
+| Comando | O que faz |
+|---------|-----------|
+| `npx expo start` | Inicia o servidor de desenvolvimento |
+| `npx expo start --android` | Abre direto no emulador Android |
+| `npx expo start --ios` | Abre direto no simulador iOS |
+| `npx expo start --web` | Abre no navegador |
