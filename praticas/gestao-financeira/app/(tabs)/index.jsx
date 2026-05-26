@@ -1,7 +1,6 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   RefreshControl,
   Text,
@@ -9,28 +8,24 @@ import {
   View,
 } from "react-native";
 import TransactionItem from "../../components/TransactionItem";
+import MonthYearFilter from "../../components/MonthYearFilter";
+import EditTransactionModal from "../../components/EditTransactionModal";
 import { MoneyContext } from "../../contexts/GlobalState";
 import { globalStyles } from "../../styles/globalStyles";
 import { colors } from "../../constants/colors";
 
 export default function Transactions() {
-  const { transactions, loading, error, refresh, removeTransaction } =
-    useContext(MoneyContext);
+  const { transactions, loading, error, refresh } = useContext(MoneyContext);
 
-  const handleLongPress = (item) => {
-    Alert.alert(
-      "Excluir transação",
-      `Deseja excluir "${item.description}"?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: () => removeTransaction(item.id),
-        },
-      ]
-    );
-  };
+  const now = new Date();
+  const [month, setMonth] = useState(now.getMonth());
+  const [year, setYear] = useState(now.getFullYear());
+  const [editingTx, setEditingTx] = useState(null);
+
+  const filtered = transactions.filter((tx) => {
+    const d = new Date(tx.date);
+    return d.getMonth() === month && d.getFullYear() === year;
+  });
 
   if (loading) {
     return (
@@ -56,17 +51,27 @@ export default function Transactions() {
 
   return (
     <View style={globalStyles.screenContainer}>
+      <MonthYearFilter
+        month={month}
+        year={year}
+        onChange={(m, y) => { setMonth(m); setYear(y); }}
+      />
+
       <FlatList
-        data={transactions}
+        data={filtered}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
-          <TouchableOpacity onLongPress={() => handleLongPress(item)} activeOpacity={1}>
+          <TouchableOpacity
+            onLongPress={() => setEditingTx(item)}
+            activeOpacity={1}
+            delayLongPress={400}
+          >
             <TransactionItem {...item} />
           </TouchableOpacity>
         )}
         ListEmptyComponent={
-          <Text style={globalStyles.secondaryText}>
-            Ainda não há nenhuma transação!
+          <Text style={[globalStyles.secondaryText, { textAlign: "center", marginTop: 40 }]}>
+            Nenhuma transação neste mês.{"\n"}Pressione + para adicionar.
           </Text>
         }
         refreshControl={
@@ -77,6 +82,12 @@ export default function Transactions() {
           />
         }
         style={globalStyles.content}
+      />
+
+      <EditTransactionModal
+        transaction={editingTx}
+        visible={!!editingTx}
+        onClose={() => setEditingTx(null)}
       />
     </View>
   );

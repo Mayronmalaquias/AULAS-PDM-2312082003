@@ -1,9 +1,12 @@
 import { Tabs } from "expo-router";
 import { colors } from "../../constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function TabsLayout() {
+  const { user, logout } = useAuth();
+
   return (
     <Tabs
       screenOptions={{
@@ -20,6 +23,15 @@ export default function TabsLayout() {
         tabBarHideOnKeyboard: true,
         tabBarButton: (props) => (
           <TouchableOpacity {...props} activeOpacity={0.8} />
+        ),
+        headerLeft: () =>
+          user ? (
+            <Text style={styles.welcomeText}>Olá, {user.name}!</Text>
+          ) : null,
+        headerRight: () => (
+          <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
+            <MaterialIcons name="logout" size={22} color={colors.primaryContrast} />
+          </TouchableOpacity>
         ),
       }}
     >
@@ -68,12 +80,21 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   addButton: {
-    display: "flex",
     alignItems: "center",
     justifyContent: "center",
     height: 64,
     width: 64,
     borderRadius: 32,
     backgroundColor: colors.primary,
+  },
+  welcomeText: {
+    color: colors.primaryContrast,
+    fontSize: 13,
+    fontWeight: "600",
+    marginLeft: 12,
+  },
+  logoutBtn: {
+    marginRight: 12,
+    padding: 4,
   },
 });

@@ -35,6 +35,11 @@ export default function GlobalState({ children }) {
     setTransactions((prev) => [tx, ...prev]);
   }, []);
 
+  const updateTransaction = useCallback(async (id, data) => {
+    const tx = await api.updateTransaction(id, data);
+    setTransactions((prev) => prev.map((t) => (t.id === id ? tx : t)));
+  }, []);
+
   const removeTransaction = useCallback(async (id) => {
     await api.deleteTransaction(id);
     setTransactions((prev) => prev.filter((t) => t.id !== id));
@@ -59,6 +64,7 @@ export default function GlobalState({ children }) {
         error,
         refresh,
         addTransaction,
+        updateTransaction,
         removeTransaction,
         addCategory,
         removeCategory,
