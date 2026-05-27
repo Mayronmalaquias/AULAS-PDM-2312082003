@@ -14,18 +14,19 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useAuth } from "../contexts/AuthContext";
 import { colors } from "../constants/colors";
 
-export default function Login() {
+export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const { register } = useAuth();
   const router = useRouter();
 
-  const handleLogin = () => {
-    const result = login(username, password);
+  const handleRegister = () => {
+    const result = register(username, password, confirmPassword);
     if (result.ok) {
       router.replace("/(tabs)");
     } else {
-      Alert.alert("Erro ao entrar", result.error);
+      Alert.alert("Erro no cadastro", result.error);
     }
   };
 
@@ -36,10 +37,10 @@ export default function Login() {
     >
       <View style={styles.logoContainer}>
         <View style={styles.logoCircle}>
-          <MaterialIcons name="account-balance-wallet" size={56} color="#fff" />
+          <MaterialIcons name="person-add" size={56} color="#fff" />
         </View>
-        <Text style={styles.title}>Gestão Financeira</Text>
-        <Text style={styles.subtitle}>Controle suas finanças com facilidade</Text>
+        <Text style={styles.title}>Criar Conta</Text>
+        <Text style={styles.subtitle}>Preencha os dados para se cadastrar</Text>
       </View>
 
       <View style={styles.form}>
@@ -47,7 +48,7 @@ export default function Login() {
           <Text style={styles.label}>Usuário</Text>
           <TextInput
             style={styles.input}
-            placeholder="Digite seu usuário"
+            placeholder="Escolha um nome de usuário"
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
@@ -60,22 +61,34 @@ export default function Login() {
           <Text style={styles.label}>Senha</Text>
           <TextInput
             style={styles.input}
-            placeholder="Digite sua senha"
+            placeholder="Crie uma senha"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
-            returnKeyType="done"
-            onSubmitEditing={handleLogin}
+            returnKeyType="next"
           />
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin} activeOpacity={0.85}>
-          <Text style={styles.buttonText}>Entrar</Text>
+        <View>
+          <Text style={styles.label}>Confirmar Senha</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Repita a senha"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            returnKeyType="done"
+            onSubmitEditing={handleRegister}
+          />
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={handleRegister} activeOpacity={0.85}>
+          <Text style={styles.buttonText}>Criar Conta</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.replace("/register")} activeOpacity={0.7}>
-          <Text style={styles.registerLink}>
-            Não tem uma conta? <Text style={styles.registerLinkBold}>Criar conta</Text>
+        <TouchableOpacity onPress={() => router.replace("/login")} activeOpacity={0.7}>
+          <Text style={styles.loginLink}>
+            Já tem uma conta? <Text style={styles.loginLinkBold}>Entrar</Text>
           </Text>
         </TouchableOpacity>
       </View>
@@ -151,13 +164,13 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "bold",
   },
-  registerLink: {
+  loginLink: {
     textAlign: "center",
     color: colors.secondaryText,
     fontSize: 14,
     marginTop: 4,
   },
-  registerLinkBold: {
+  loginLinkBold: {
     color: colors.primary,
     fontWeight: "bold",
   },

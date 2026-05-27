@@ -12,10 +12,10 @@ function NavigationGuard() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const inLogin = segments[0] === "login";
-      if (!user && !inLogin) {
+      const inAuthScreen = segments[0] === "login" || segments[0] === "register";
+      if (!user && !inAuthScreen) {
         router.replace("/login");
-      } else if (user && inLogin) {
+      } else if (user && inAuthScreen) {
         router.replace("/(tabs)");
       }
     }, 0);
@@ -34,6 +34,7 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="register" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
       </GlobalState>
