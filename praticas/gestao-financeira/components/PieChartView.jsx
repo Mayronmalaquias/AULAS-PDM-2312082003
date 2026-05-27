@@ -1,57 +1,59 @@
 import { StyleSheet, Text, View } from "react-native";
+import Svg, { Path } from "react-native-svg";
 import { colors } from "../constants/colors";
 
 const SIZE = 200;
-const RADIUS = SIZE / 2;
+const CX = SIZE / 2;
+const CY = SIZE / 2;
+const OUTER_R = SIZE / 2;
+const INNER_R = SIZE * 0.25;
 
-function polarToXY(angleDeg, radius) {
-  const rad = ((angleDeg - 90) * Math.PI) / 180;
+function toRad(deg) {
+  return ((deg - 90) * Math.PI) / 180;
+}
+
+function polarToCart(r, angleDeg) {
+  const rad = toRad(angleDeg);
   return {
-    x: RADIUS + radius * Math.cos(rad),
-    y: RADIUS + radius * Math.sin(rad),
+    x: CX + r * Math.cos(rad),
+    y: CY + r * Math.sin(rad),
   };
 }
 
-function PieSlice({ startAngle, sweepAngle, color }) {
-  if (sweepAngle <= 0) return null;
+function buildSlicePath(startAngle, sweepAngle) {
+  const endAngle = startAngle + sweepAngle;
+  const largeArc = sweepAngle > 180 ? 1 : 0;
 
-  const clampedSweep = Math.min(sweepAngle, 359.99);
+  const o1 = polarToCart(OUTER_R, startAngle);
+  const o2 = polarToCart(OUTER_R, endAngle);
+  const i2 = polarToCart(INNER_R, endAngle);
+  const i1 = polarToCart(INNER_R, startAngle);
 
-  // Full circle case
-  if (clampedSweep >= 359) {
-    return (
-      <View
-        style={[
-          styles.fullCircle,
-          { backgroundColor: color },
-        ]}
-      />
-    );
-  }
+  return [
+    `M ${o1.x} ${o1.y}`,
+    `A ${OUTER_R} ${OUTER_R} 0 ${largeArc} 1 ${o2.x} ${o2.y}`,
+    `L ${i2.x} ${i2.y}`,
+    `A ${INNER_R} ${INNER_R} 0 ${largeArc} 0 ${i1.x} ${i1.y}`,
+    "Z",
+  ].join(" ");
+}
 
-  // Use two half-masks to render any arc
-  const endAngle = startAngle + clampedSweep;
-  const firstHalfEnd = Math.min(startAngle + 180, endAngle);
-  const needSecondHalf = clampedSweep > 180;
+function buildFullCirclePath(outerR, innerR) {
+  // SVG arcs can't span 360°, so draw two 180° arcs
+  const top = { x: CX, y: CY - outerR };
+  const bot = { x: CX, y: CY + outerR };
+  const itop = { x: CX, y: CY - innerR };
+  const ibot = { x: CX, y: CY + innerR };
 
-  return (
-    <>
-      {/* First half (up to 180°) */}
-      <View
-        style={[styles.halfCircleContainer, { transform: [{ rotate: `${startAngle}deg` }] }]}
-      >
-        <View style={[styles.halfCircle, { backgroundColor: color }]} />
-      </View>
-      {/* Second half (180° to sweep) */}
-      {needSecondHalf && (
-        <View
-          style={[styles.halfCircleContainer, { transform: [{ rotate: `${startAngle + 180}deg` }] }]}
-        >
-          <View style={[styles.halfCircle, { backgroundColor: color }]} />
-        </View>
-      )}
-    </>
-  );
+  return [
+    `M ${top.x} ${top.y}`,
+    `A ${outerR} ${outerR} 0 1 1 ${bot.x} ${bot.y}`,
+    `A ${outerR} ${outerR} 0 1 1 ${top.x} ${top.y}`,
+    `M ${itop.x} ${itop.y}`,
+    `A ${innerR} ${innerR} 0 1 0 ${ibot.x} ${ibot.y}`,
+    `A ${innerR} ${innerR} 0 1 0 ${itop.x} ${itop.y}`,
+    "Z",
+  ].join(" ");
 }
 
 export default function PieChartView({ data }) {
@@ -76,26 +78,16 @@ export default function PieChartView({ data }) {
 
   return (
     <View style={styles.wrapper}>
-      {/* Pie chart */}
-      <View style={styles.chartContainer}>
-        {/* Background circle */}
-        <View style={[styles.fullCircle, { backgroundColor: "#ddd" }]} />
-        {/* Slices rendered back-to-front, using clip approach */}
-        <View style={styles.pieClip}>
-          {slices.map((slice, i) => (
-            <PieSlice
-              key={i}
-              startAngle={slice.startAngle}
-              sweepAngle={slice.sweep}
-              color={slice.color}
-            />
-          ))}
-        </View>
-        {/* Center hole (donut) */}
-        <View style={styles.centerHole} />
-      </View>
+      <Svg width={SIZE} height={SIZE} style={styles.chart}>
+        {slices.map((slice, i) => {
+          const path =
+            slice.sweep >= 359.99
+              ? buildFullCirclePath(OUTER_R, INNER_R)
+              : buildSlicePath(slice.startAngle, slice.sweep);
+          return <Path key={i} d={path} fill={slice.color} />;
+        })}
+      </Svg>
 
-      {/* Legend */}
       <View style={styles.legend}>
         {slices.map((s, i) => (
           <View key={i} style={styles.legendRow}>
@@ -118,47 +110,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 16,
   },
-  chartContainer: {
-    width: SIZE,
-    height: SIZE,
-    position: "relative",
+  chart: {
     marginBottom: 20,
-  },
-  pieClip: {
-    position: "absolute",
-    width: SIZE,
-    height: SIZE,
-    borderRadius: RADIUS,
-    overflow: "hidden",
-  },
-  fullCircle: {
-    position: "absolute",
-    width: SIZE,
-    height: SIZE,
-    borderRadius: RADIUS,
-  },
-  halfCircleContainer: {
-    position: "absolute",
-    width: SIZE,
-    height: SIZE,
-    overflow: "hidden",
-  },
-  halfCircle: {
-    position: "absolute",
-    width: RADIUS,
-    height: SIZE,
-    left: RADIUS,
-    borderTopRightRadius: RADIUS,
-    borderBottomRightRadius: RADIUS,
-  },
-  centerHole: {
-    position: "absolute",
-    width: SIZE * 0.5,
-    height: SIZE * 0.5,
-    borderRadius: SIZE * 0.25,
-    backgroundColor: colors.background,
-    top: SIZE * 0.25,
-    left: SIZE * 0.25,
   },
   legend: {
     width: "100%",
