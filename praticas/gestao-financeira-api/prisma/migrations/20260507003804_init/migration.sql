@@ -1,26 +1,30 @@
 -- CreateTable
-CREATE TABLE "Category" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "displayName" TEXT NOT NULL,
-    "icon" TEXT NOT NULL,
-    "background" TEXT NOT NULL,
-    "isIncome" BOOLEAN NOT NULL DEFAULT false,
-    "isDefault" BOOLEAN NOT NULL DEFAULT false,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+CREATE TABLE `Category` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `displayName` VARCHAR(191) NOT NULL,
+    `icon` VARCHAR(191) NOT NULL,
+    `background` VARCHAR(191) NOT NULL,
+    `isIncome` BOOLEAN NOT NULL DEFAULT false,
+    `isDefault` BOOLEAN NOT NULL DEFAULT false,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    UNIQUE INDEX `Category_name_key`(`name`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE "Transaction" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "description" TEXT NOT NULL,
-    "value" REAL NOT NULL,
-    "date" DATETIME NOT NULL,
-    "categoryId" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Transaction_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
-);
+CREATE TABLE `Transaction` (
+    `id` VARCHAR(191) NOT NULL,
+    `description` VARCHAR(191) NOT NULL,
+    `value` DOUBLE NOT NULL,
+    `date` DATETIME(3) NOT NULL,
+    `categoryId` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
--- CreateIndex
-CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `Category`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

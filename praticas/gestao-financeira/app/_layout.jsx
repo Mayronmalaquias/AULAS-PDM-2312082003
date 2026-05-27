@@ -11,12 +11,15 @@ function NavigationGuard() {
   const router = useRouter();
 
   useEffect(() => {
-    const inLogin = segments[0] === "login";
-    if (!user && !inLogin) {
-      router.replace("/login");
-    } else if (user && inLogin) {
-      router.replace("/(tabs)");
-    }
+    const timer = setTimeout(() => {
+      const inLogin = segments[0] === "login";
+      if (!user && !inLogin) {
+        router.replace("/login");
+      } else if (user && inLogin) {
+        router.replace("/(tabs)");
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [user, segments]);
 
   return null;
