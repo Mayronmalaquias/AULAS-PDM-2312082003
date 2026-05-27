@@ -66,7 +66,7 @@ EXPO_PUBLIC_API_URL=http://192.168.X.X:3000
 ### 4. Inicie o app
 
 ```bash
-npx expo start
+npx expo start --android
 ```
 
 Escolha como abrir:
